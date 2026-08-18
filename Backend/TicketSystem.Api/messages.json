@@ -1,0 +1,27 @@
+[
+  { "code": 1001, "message": "Tickets retrieved successfully." },
+  { "code": 1002, "message": "Ticket retrieved successfully." },
+  { "code": 1003, "message": "Ticket created successfully." },
+  { "code": 1004, "message": "Ticket status updated successfully." },
+  { "code": 1005, "message": "Ticket deleted successfully." },
+
+  { "code": 1101, "message": "Users retrieved successfully." },
+  { "code": 1102, "message": "User created successfully." },
+  { "code": 1103, "message": "User deactivated successfully." },
+  { "code": 1104, "message": "Login successful." },
+  { "code": 1105, "message": "Logout successful." },
+
+  { "code": 9001, "message": "Ticket with id {0} was not found." },
+  { "code": 9002, "message": "Invalid status value '{0}'. Allowed values: {1}." },
+
+  { "code": 9101, "message": "User with id {0} was not found." },
+  { "code": 9102, "message": "Invalid role value '{0}'. Allowed values: {1}." },
+  { "code": 9103, "message": "A user with email '{0}' already exists." },
+  { "code": 9104, "message": "Invalid email or password." },
+  { "code": 9105, "message": "This account has been deactivated." },
+  { "code": 9106, "message": "Authentication required. Please log in." },
+  { "code": 9107, "message": "You do not have permission to perform this action." },
+
+  { "code": 9901, "message": "Validation failed: {0}" },
+  { "code": 9999, "message": "An unexpected error occurred." }
+]

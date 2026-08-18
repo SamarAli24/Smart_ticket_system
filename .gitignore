@@ -1,0 +1,24 @@
+# Claude Code
+.claude/
+**/.claude/
+
+# Node / Frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
+# .NET / Backend
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+Backend/TicketSystem.Api/appsettings.json
+Backend/TicketSystem.Api/run.log
+
+# Editor
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
