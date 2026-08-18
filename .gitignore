@@ -16,6 +16,10 @@ obj/
 Backend/TicketSystem.Api/appsettings.json
 Backend/TicketSystem.Api/run.log
 
+# Build output of the deploy pipeline (frontend build copied into wwwroot, then published)
+Backend/TicketSystem.Api/wwwroot/
+publish/
+
 # Editor
 .vscode/
 

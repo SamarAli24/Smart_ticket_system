@@ -181,6 +181,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Serve the React (Vite) build that is copied into wwwroot at deploy time.
+// UseDefaultFiles must come before UseStaticFiles so "/" resolves to index.html.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseCors(ReactAppCorsPolicy);
@@ -189,6 +194,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Client-side routing catch-all: any request that did not match an API controller or a
+// physical static file falls back to the SPA shell. Must be registered last so it never
+// shadows /api/* routes.
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

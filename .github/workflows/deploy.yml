@@ -1,0 +1,70 @@
+name: Deploy to MonsterASP.NET
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FRONTEND_DIR: Frontend
+  BACKEND_PROJECT: Backend/TicketSystem.Api/TicketSystem.Api.csproj
+  WWWROOT_DIR: Backend/TicketSystem.Api/wwwroot
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
+      # The SPA is served by the API itself, so the Vite build has to live in wwwroot
+      # before the .NET project is published. wwwroot is wiped first so files removed
+      # from the frontend never linger in a deployment.
+      - name: Copy frontend build into backend wwwroot
+        shell: pwsh
+        run: |
+          if (Test-Path "${{ env.WWWROOT_DIR }}") {
+            Remove-Item "${{ env.WWWROOT_DIR }}" -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path "${{ env.WWWROOT_DIR }}" -Force | Out-Null
+          Copy-Item -Path "${{ env.FRONTEND_DIR }}/dist/*" -Destination "${{ env.WWWROOT_DIR }}" -Recurse -Force
+          Get-ChildItem "${{ env.WWWROOT_DIR }}" -Recurse | Select-Object -ExpandProperty FullName
+
+      # Matches <TargetFramework>net8.0</TargetFramework> in TicketSystem.Api.csproj.
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore ${{ env.BACKEND_PROJECT }} --runtime win-x86
+
+      # MonsterASP.NET application pools run 32-bit, hence win-x86.
+      # --no-self-contained keeps the shared framework on the host.
+      - name: Publish
+        run: dotnet publish ${{ env.BACKEND_PROJECT }} -c Release -o ./publish --runtime win-x86 --no-self-contained --no-restore
+
+      - name: Deploy to MonsterASP.NET
+        uses: rasmusbuchholdt/simply-web-deploy@2.2.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\publish\'
