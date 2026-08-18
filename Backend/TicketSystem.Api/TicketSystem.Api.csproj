@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Local-only secrets (e.g. AiApi:ApiKey) live outside the repo in the user profile. -->
+    <UserSecretsId>ticketsystem-api-local-secrets</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

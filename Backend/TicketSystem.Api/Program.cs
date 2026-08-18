@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TicketSystem.Api.Common.Responses;
 using TicketSystem.Api.Data;
@@ -23,7 +24,29 @@ const string ReactAppCorsPolicy = "ReactAppCorsPolicy";
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
     ?? throw new InvalidOperationException("Jwt configuration section is missing.");
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+// The signing key may be supplied by the hosting environment so the value committed in
+// appsettings.json is only a default. Both the standard "Jwt__Key" form (which configuration
+// already maps onto Jwt:Key) and a flat "JWT_KEY" alias are honoured, the latter because some
+// hosting panels don't accept double underscores in variable names.
+var jwtKeyOverride = builder.Configuration["JWT_KEY"];
+if (!string.IsNullOrWhiteSpace(jwtKeyOverride))
+{
+    jwtSettings.Key = jwtKeyOverride;
+}
+
+// HMAC-SHA256 needs at least a 256-bit (32-byte) key; failing here with a precise message beats
+// failing later inside the token handler with an opaque one.
+if (Encoding.UTF8.GetByteCount(jwtSettings.Key) < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Key is missing or shorter than 32 bytes. Set it in appsettings.json, or override it " +
+        "with the JWT_KEY (or Jwt__Key) environment variable.");
+}
+
+// Register the resolved instance rather than re-binding the section, so token generation
+// (JwtTokenService via IOptions) and token validation below can never use different keys.
+builder.Services.AddSingleton(Options.Create(jwtSettings));
 builder.Services.Configure<AiApiOptions>(builder.Configuration.GetSection("AiApi"));
 
 // Services
