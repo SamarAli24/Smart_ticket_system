@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://localhost:7276/api";
+// Relative by default: in production the SPA is served from the API's wwwroot, so the API is
+// same-origin. `vite dev` overrides this via .env.development to reach the local Kestrel port.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export class ApiError extends Error {
   status: number;
