@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
     public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+    public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
     public DbSet<RevokedToken> RevokedTokens => Set<RevokedToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +66,17 @@ public class AppDbContext : DbContext
             entity.Property(a => a.EntityName).IsRequired().HasMaxLength(100);
             entity.Property(a => a.Details).HasMaxLength(4000);
             entity.HasIndex(a => a.Timestamp);
+        });
+
+        modelBuilder.Entity<ErrorLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Method).IsRequired().HasMaxLength(10);
+            entity.Property(e => e.Path).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.ExceptionType).HasMaxLength(300);
+            entity.Property(e => e.IPAddress).HasMaxLength(45);
+            entity.HasIndex(e => e.Timestamp);
         });
 
         modelBuilder.Entity<RevokedToken>(entity =>

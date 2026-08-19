@@ -14,6 +14,7 @@ A full-stack support ticket management app. Support agents and admins can log in
 - **Authentication**: email/password login using JWT (JSON Web Tokens). Logout revokes the token server-side so it can't be reused, even if it hasn't expired yet.
 - **Request logging**: every single HTTP request (method, path, status code, response time, IP, and who made it) is recorded to the database.
 - **Activity logging**: every successful create/update/delete action is recorded as an activity log entry, automatically, with no extra code needed per controller. It stores who did what, to which record, and when.
+- **Error logging**: every API error, whether an expected one (validation failure, not found, unauthorized, etc.) or an unexpected server exception, is recorded to the database with its status code, message, and (for real exceptions) the stack trace, no matter which controller or service it came from.
 - **API documentation**: a live Swagger UI page for exploring and testing every endpoint (development mode only).
 - **Demo data on first run**: the database is automatically seeded with 4 sample users and 5 sample tickets the first time the backend runs, so there's data to look at immediately.
 
