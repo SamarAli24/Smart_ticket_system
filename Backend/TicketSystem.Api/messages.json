@@ -12,6 +12,10 @@
   { "code": 1104, "message": "Login successful." },
   { "code": 1105, "message": "Logout successful." },
 
+  { "code": 1201, "message": "Activity logs retrieved successfully." },
+  { "code": 1202, "message": "Request logs retrieved successfully." },
+  { "code": 1203, "message": "Error logs retrieved successfully." },
+
   { "code": 9001, "message": "Ticket with id {0} was not found." },
   { "code": 9002, "message": "Invalid status value '{0}'. Allowed values: {1}." },
 

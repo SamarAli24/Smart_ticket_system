@@ -50,3 +50,39 @@ export interface LoginResponseData {
   expiresAtUtc: string;
   user: UserDto;
 }
+
+export interface ActivityLogDto {
+  id: number;
+  action: string;
+  entityName: string;
+  entityId: number;
+  performedByUserId: number | null;
+  details: string | null;
+  timestamp: string;
+}
+
+export interface RequestLogDto {
+  id: number;
+  method: string;
+  path: string;
+  queryString: string | null;
+  statusCode: number;
+  responseTimeMs: number;
+  ipAddress: string | null;
+  userId: number | null;
+  timestamp: string;
+}
+
+export interface ErrorLogDto {
+  id: number;
+  method: string;
+  path: string;
+  statusCode: number;
+  errorCode: number | null;
+  message: string;
+  exceptionType: string | null;
+  stackTrace: string | null;
+  userId: number | null;
+  ipAddress: string | null;
+  timestamp: string;
+}

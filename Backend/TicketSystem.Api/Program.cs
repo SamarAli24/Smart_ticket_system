@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TicketSystem.Api.Common;
 using TicketSystem.Api.Common.Responses;
 using TicketSystem.Api.Data;
 using TicketSystem.Api.Filters;
@@ -14,7 +13,6 @@ using TicketSystem.Api.Helpers;
 using TicketSystem.Api.Integrations.AI;
 using TicketSystem.Api.Middleware;
 using TicketSystem.Api.Models;
-using TicketSystem.Api.Models.Logging;
 using TicketSystem.Api.Repositories.Implementations;
 using TicketSystem.Api.Repositories.Interfaces;
 using TicketSystem.Api.Services.Implementations;
@@ -73,8 +71,9 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
         // [ApiController]'s automatic model validation short-circuits before the controller
         // action (and therefore ApiControllerBase.RequestEnd) ever runs, so it needs its own
-        // call into the shared error logger. The factory itself is synchronous, hence the block.
-        LogAuthErrorAsync(context.HttpContext, result).GetAwaiter().GetResult();
+        // call into the shared IErrorLogService. The factory itself is synchronous, hence the block.
+        var errorLogService = context.HttpContext.RequestServices.GetRequiredService<IErrorLogService>();
+        errorLogService.LogAsync(context.HttpContext, result.StatusCode, result.Message, result.Error?.Code).GetAwaiter().GetResult();
 
         return new ObjectResult(result) { StatusCode = result.StatusCode };
     };
@@ -100,6 +99,11 @@ builder.Services.AddScoped<IRevokedTokenRepository, RevokedTokenRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ILogsService, LogsService>();
+
+// Single centralized writer for the ErrorLogs table, used by ApiControllerBase,
+// ExceptionHandlingMiddleware, and the JWT auth/model-validation handlers below.
+builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 
 // Rule-based classifier is kept registered on its own (both as the AI classifier's
 // fallback dependency and as a directly swappable IPriorityClassifier implementation).
@@ -153,7 +157,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 context.HandleResponse();
                 var result = new Result();
                 result.SetError(HttpStatusCode.Unauthorized, MessageCode.Unauthorized);
-                await LogAuthErrorAsync(context.HttpContext, result);
+                var errorLogService = context.HttpContext.RequestServices.GetRequiredService<IErrorLogService>();
+                await errorLogService.LogAsync(context.HttpContext, result.StatusCode, result.Message, result.Error?.Code);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = result.StatusCode;
                 await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
@@ -162,7 +167,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 var result = new Result();
                 result.SetError(HttpStatusCode.Forbidden, MessageCode.Forbidden);
-                await LogAuthErrorAsync(context.HttpContext, result);
+                var errorLogService = context.HttpContext.RequestServices.GetRequiredService<IErrorLogService>();
+                await errorLogService.LogAsync(context.HttpContext, result.StatusCode, result.Message, result.Error?.Code);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = result.StatusCode;
                 await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
@@ -234,33 +240,6 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
-
-// Shared by the JwtBearer OnChallenge/OnForbidden handlers above: those run outside any
-// controller, so they never pass through ApiControllerBase.RequestEnd's own error logging.
-static async Task LogAuthErrorAsync(HttpContext context, Result result)
-{
-    try
-    {
-        var dbContext = context.RequestServices.GetRequiredService<AppDbContext>();
-        dbContext.ErrorLogs.Add(new ErrorLog
-        {
-            Method = context.Request.Method,
-            Path = context.Request.Path.Value ?? string.Empty,
-            StatusCode = result.StatusCode,
-            ErrorCode = result.Error?.Code,
-            Message = result.Message,
-            UserId = context.User.GetUserId(),
-            IPAddress = context.Connection.RemoteIpAddress?.ToString(),
-            Timestamp = DateTime.UtcNow
-        });
-        await dbContext.SaveChangesAsync();
-    }
-    catch (Exception ex)
-    {
-        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogWarning(ex, "Failed to write error log for {Method} {Path}", context.Request.Method, context.Request.Path);
-    }
-}
 
 public partial class Program
 {

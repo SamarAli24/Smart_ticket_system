@@ -6,6 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import Tickets from "./pages/Tickets";
 import CreateTicket from "./pages/CreateTicket";
 import Users from "./pages/Users";
+import ActivityLogs from "./pages/logs/ActivityLogs";
+import RequestLogs from "./pages/logs/RequestLogs";
+import ErrorLogs from "./pages/logs/ErrorLogs";
 
 export default function App() {
   return (
@@ -42,6 +45,30 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Users />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/logs/activity"
+          element={
+            <ProtectedRoute>
+              <ActivityLogs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/logs/requests"
+          element={
+            <ProtectedRoute>
+              <RequestLogs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/logs/errors"
+          element={
+            <ProtectedRoute>
+              <ErrorLogs />
             </ProtectedRoute>
           }
         />

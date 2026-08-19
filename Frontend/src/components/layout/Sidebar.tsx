@@ -1,7 +1,8 @@
 import BrandLogo from "./BrandLogo";
 import SidebarNavLink from "./SidebarNavLink";
+import SidebarNavGroup from "./SidebarNavGroup";
 import UserSummary from "./UserSummary";
-import { navItems } from "./navConfig";
+import { logsNavGroup, navItems } from "./navConfig";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Sidebar() {
@@ -22,6 +23,7 @@ export default function Sidebar() {
           {navItems.map((item) => (
             <SidebarNavLink key={item.to} {...item} />
           ))}
+          <SidebarNavGroup {...logsNavGroup} />
         </nav>
       </div>
 

@@ -14,7 +14,8 @@ A full-stack support ticket management app. Support agents and admins can log in
 - **Authentication**: email/password login using JWT (JSON Web Tokens). Logout revokes the token server-side so it can't be reused, even if it hasn't expired yet.
 - **Request logging**: every single HTTP request (method, path, status code, response time, IP, and who made it) is recorded to the database.
 - **Activity logging**: every successful create/update/delete action is recorded as an activity log entry, automatically, with no extra code needed per controller. It stores who did what, to which record, and when.
-- **Error logging**: every API error, whether an expected one (validation failure, not found, unauthorized, etc.) or an unexpected server exception, is recorded to the database with its status code, message, and (for real exceptions) the stack trace, no matter which controller or service it came from.
+- **Error logging**: every API error, whether an expected one (validation failure, not found, unauthorized, etc.) or an unexpected server exception, is recorded to the database with its status code, message, and (for real exceptions) the stack trace, no matter which controller or service it came from. All of it is written through a single centralized `IErrorLogService`, so there is exactly one place in the codebase that touches the ErrorLogs table.
+- **Logs viewer UI**: a collapsible "Logs" section in the sidebar with three pages, Activity, Requests, and Errors, each backed by its own read-only API endpoint. Clicking an error row opens its full message, exception type, and stack trace.
 - **API documentation**: a live Swagger UI page for exploring and testing every endpoint (development mode only).
 - **Demo data on first run**: the database is automatically seeded with 4 sample users and 5 sample tickets the first time the backend runs, so there's data to look at immediately.
 
@@ -202,6 +203,9 @@ All routes are prefixed with `/api`. Endpoints marked 🔒 require a valid JWT (
 | GET 🔒 | `/api/users` | Get all users |
 | POST 🔒 | `/api/users` | Create a new user (Admin or Agent) |
 | PATCH 🔒 | `/api/users/{id}/deactivate` | Deactivate a user account |
+| GET 🔒 | `/api/logs/activity` | Get the most recent activity logs (create/update/delete actions) |
+| GET 🔒 | `/api/logs/requests` | Get the most recent HTTP request logs |
+| GET 🔒 | `/api/logs/errors` | Get the most recent error logs |
 
 > Full interactive documentation is available through Swagger UI at `/swagger` when running the backend in development mode.
 

@@ -22,6 +22,11 @@ public enum MessageCode
     LoginSuccess = 1104,
     LogoutSuccess = 1105,
 
+    // Success — Logs
+    ActivityLogsRetrieved = 1201,
+    RequestLogsRetrieved = 1202,
+    ErrorLogsRetrieved = 1203,
+
     // Errors — Tickets
     TicketNotFound = 9001,
     InvalidTicketStatus = 9002,
