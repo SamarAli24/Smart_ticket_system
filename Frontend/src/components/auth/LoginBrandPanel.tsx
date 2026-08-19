@@ -25,7 +25,7 @@ export default function LoginBrandPanel() {
       <div className="relative max-w-md">
         <h2 className="text-3xl font-bold leading-tight">Deliver faster, smarter IT support.</h2>
         <p className="mt-4 text-sm leading-relaxed text-slate-300">
-          A unified workspace for helpdesk teams to triage, assign, and resolve tickets — with
+          A unified workspace for helpdesk teams to triage, assign, and resolve tickets, with
           role-based access for admins and agents.
         </p>
         <ul className="mt-6 space-y-3">

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Input from "../common/Input";
 import Button from "../common/Button";
-import DemoAccountsCard from "./DemoAccountsCard";
 
 interface LoginFormProps {
   onSubmit: (credentials: { email: string; password: string; remember: boolean }) => void;
@@ -87,8 +86,6 @@ export default function LoginForm({ onSubmit, error, isSubmitting }: LoginFormPr
       <Button type="submit" variant="primary" className="mt-5 w-full py-2.5" disabled={isSubmitting}>
         {isSubmitting ? "Signing in..." : "Login"}
       </Button>
-
-      <DemoAccountsCard />
     </form>
   );
 }
