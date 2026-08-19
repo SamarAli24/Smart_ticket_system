@@ -7,7 +7,9 @@ import EditTicketModal, { EditTicketInput } from "../components/tickets/EditTick
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import Pagination from "../components/common/Pagination";
 import { useTickets } from "../hooks/useTickets";
+import { usePagination } from "../hooks/usePagination";
 import { useUsers } from "../hooks/useUsers";
 import { ApiError } from "../services/httpClient";
 import type { Priority, Status, Ticket } from "../types";
@@ -42,6 +44,12 @@ export default function Tickets() {
       return false;
     return true;
   });
+
+  const pagination = usePagination(
+    filteredTickets,
+    15,
+    `${search}|${statusFilter}|${priorityFilter}|${assigneeFilter}`
+  );
 
   const handleChangeStatus = (id: string, currentStatus: Status) => {
     const nextStatus = STATUS_CYCLE[(STATUS_CYCLE.indexOf(currentStatus) + 1) % STATUS_CYCLE.length];
@@ -109,12 +117,24 @@ export default function Tickets() {
         ) : error ? (
           <ErrorState message={error} onRetry={refetch} />
         ) : (
-          <TicketsTable
-            tickets={filteredTickets}
-            onEdit={handleEdit}
-            onChangeStatus={handleChangeStatus}
-            onDelete={handleDelete}
-          />
+          <>
+            <TicketsTable
+              tickets={pagination.pageItems}
+              onEdit={handleEdit}
+              onChangeStatus={handleChangeStatus}
+              onDelete={handleDelete}
+            />
+            <Pagination
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              pageSize={pagination.pageSize}
+              totalItems={pagination.totalItems}
+              rangeStart={pagination.rangeStart}
+              rangeEnd={pagination.rangeEnd}
+              onPageChange={pagination.setPage}
+              onPageSizeChange={pagination.setPageSize}
+            />
+          </>
         )}
       </div>
 

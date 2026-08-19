@@ -6,7 +6,9 @@ import AddUserModal, { NewUserInput } from "../components/users/AddUserModal";
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import Pagination from "../components/common/Pagination";
 import { useUsers } from "../hooks/useUsers";
+import { usePagination } from "../hooks/usePagination";
 import { ApiError } from "../services/httpClient";
 
 export default function Users() {
@@ -16,6 +18,7 @@ export default function Users() {
   const [formError, setFormError] = useState<string | null>(null);
   const [deactivateTargetId, setDeactivateTargetId] = useState<string | null>(null);
   const [isDeactivating, setIsDeactivating] = useState(false);
+  const pagination = usePagination(users);
 
   const handleAddUser = async (input: NewUserInput) => {
     setIsSubmitting(true);
@@ -58,7 +61,19 @@ export default function Users() {
         ) : error ? (
           <ErrorState message={error} onRetry={refetch} />
         ) : (
-          <UsersTable users={users} onDeactivate={handleDeactivate} />
+          <>
+            <UsersTable users={pagination.pageItems} onDeactivate={handleDeactivate} />
+            <Pagination
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              pageSize={pagination.pageSize}
+              totalItems={pagination.totalItems}
+              rangeStart={pagination.rangeStart}
+              rangeEnd={pagination.rangeEnd}
+              onPageChange={pagination.setPage}
+              onPageSizeChange={pagination.setPageSize}
+            />
+          </>
         )}
       </div>
 
