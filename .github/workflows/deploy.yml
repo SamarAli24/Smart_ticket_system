@@ -60,6 +60,34 @@ jobs:
       - name: Publish
         run: dotnet publish ${{ env.BACKEND_PROJECT }} -c Release -o ./publish --runtime win-x86 --no-self-contained --no-restore
 
+      # Secrets never live in the repo: appsettings.json ships with a throwaway local key and
+      # an empty AI key, both replaced here from encrypted GitHub secrets just before deploy.
+      - name: Inject secrets into published config
+        shell: pwsh
+        env:
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:JWT_KEY)) {
+            throw "Secret JWT_KEY is not set. Add it under Settings > Secrets and variables > Actions."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:AI_API_KEY)) {
+            throw "Secret AI_API_KEY is not set. Add it under Settings > Secrets and variables > Actions."
+          }
+
+          $path = "./publish/appsettings.json"
+          $json = Get-Content $path -Raw | ConvertFrom-Json
+          $json.Jwt.PSObject.Properties.Remove("_comment")
+          $json.Jwt.Key = $env:JWT_KEY
+          $json.AiApi.ApiKey = $env:AI_API_KEY
+          $json | ConvertTo-Json -Depth 10 | Set-Content $path -Encoding utf8
+
+          # Confirm the placeholders are gone without printing the secrets themselves.
+          $check = Get-Content $path -Raw | ConvertFrom-Json
+          if ($check.Jwt.Key -like "local-development-only*") { throw "JWT key was not replaced." }
+          if ([string]::IsNullOrWhiteSpace($check.AiApi.ApiKey)) { throw "AI key was not replaced." }
+          Write-Host "Injected Jwt:Key ($($check.Jwt.Key.Length) chars) and AiApi:ApiKey ($($check.AiApi.ApiKey.Length) chars)."
+
       - name: Deploy to MonsterASP.NET
         uses: rasmusbuchholdt/simply-web-deploy@2.2.0
         with:

@@ -1,6 +1,7 @@
 import { Activity } from "lucide-react";
 import PriorityBadge from "../tickets/PriorityBadge";
 import TicketStatusBadge from "../tickets/TicketStatusBadge";
+import UserAvatarTooltip from "../common/UserAvatarTooltip";
 import type { Ticket } from "../../types";
 
 export default function RecentTicketListItem({ ticket }: { ticket: Ticket }) {
@@ -17,7 +18,8 @@ export default function RecentTicketListItem({ ticket }: { ticket: Ticket }) {
           </p>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-3">
+        <UserAvatarTooltip user={ticket.assignedTo} />
         <PriorityBadge priority={ticket.priority} />
         <TicketStatusBadge status={ticket.status} />
       </div>

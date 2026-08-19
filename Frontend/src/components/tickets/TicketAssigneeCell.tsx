@@ -11,9 +11,9 @@ export default function TicketAssigneeCell({ assignedTo }: { assignedTo: AgentUs
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex max-w-[170px] items-center gap-2">
       <UserAvatar name={assignedTo.name} />
-      <span className="text-slate-700">{assignedTo.name}</span>
+      <span className="truncate text-slate-700">{assignedTo.name}</span>
     </div>
   );
 }
