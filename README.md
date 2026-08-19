@@ -1,36 +1,36 @@
 # Smart Support Ticket System
 
-A full-stack support ticket management app. Support agents and admins can log in, create and track tickets, update their status, and manage the team — while the system automatically figures out how urgent each new ticket is using an AI model (with a built-in rule-based backup in case the AI is unavailable).
+A full-stack support ticket management app. Support agents and admins can log in, create and track tickets, update their status, and manage the team. The system also automatically figures out how urgent each new ticket is using an AI model, with a built-in rule-based backup in case the AI is unavailable.
 
 ## Features
 
-- **Ticket management** — create tickets, list all tickets, view a single ticket, update its status (`Open` → `InProgress` → `Resolved` → `Closed`), and delete it (soft delete — the record is kept but hidden).
-- **Automatic priority detection** — every new ticket is automatically classified as `High`, `Medium`, or `Low` priority. This is done by an AI model first, with a keyword-based rule engine as a fallback if the AI call fails or isn't configured (see [How the AI Priority Feature Works](#how-the-ai-priority-feature-works)).
-- **User management** — add new users (Admin or Agent), list all users, and deactivate a user account.
-- **Ticket assignment** — a ticket can optionally be assigned to a specific user when it's created.
-- **Authentication** — email/password login using JWT (JSON Web Tokens). Logout revokes the token server-side so it can't be reused, even if it hasn't expired yet.
-- **Request logging** — every single HTTP request (method, path, status code, response time, IP, and who made it) is recorded to the database.
-- **Activity logging** — every successful create/update/delete action is recorded as an activity log entry (who did what, to which record, and when) — automatic, no extra code needed per controller.
-- **API documentation** — a live Swagger UI page for exploring and testing every endpoint (development mode only).
-- **Demo data on first run** — the database is automatically seeded with 4 sample users and 5 sample tickets the first time the backend runs, so there's data to look at immediately.
+- **Ticket management**: create tickets, list all tickets, view a single ticket, update its status (`Open` → `InProgress` → `Resolved` → `Closed`), and delete it (soft delete, so the record is kept but hidden).
+- **Automatic priority detection**: every new ticket is automatically classified as `High`, `Medium`, or `Low` priority. This is done by an AI model first, with a keyword-based rule engine as a fallback if the AI call fails or isn't configured (see [How the AI Priority Feature Works](#how-the-ai-priority-feature-works)).
+- **User management**: add new users (Admin or Agent), list all users, and deactivate a user account.
+- **Ticket assignment**: a ticket can optionally be assigned to a specific user when it's created.
+- **Authentication**: email/password login using JWT (JSON Web Tokens). Logout revokes the token server-side so it can't be reused, even if it hasn't expired yet.
+- **Request logging**: every single HTTP request (method, path, status code, response time, IP, and who made it) is recorded to the database.
+- **Activity logging**: every successful create/update/delete action is recorded as an activity log entry, automatically, with no extra code needed per controller. It stores who did what, to which record, and when.
+- **API documentation**: a live Swagger UI page for exploring and testing every endpoint (development mode only).
+- **Demo data on first run**: the database is automatically seeded with 4 sample users and 5 sample tickets the first time the backend runs, so there's data to look at immediately.
 
 ## Tech Stack
 
 ### Backend
 - **ASP.NET Core 8.0** (Web API, C#)
-- **Entity Framework Core 8.0.11** — database access and migrations
-- **SQLite** (`Microsoft.EntityFrameworkCore.Sqlite`) — the database engine
-- **JWT authentication** — `Microsoft.AspNetCore.Authentication.JwtBearer` 8.0.11
-- **ASP.NET Core Identity password hashing** — `Microsoft.Extensions.Identity.Core` 8.0.11
-- **Swashbuckle / Swagger** 6.7.3 — API documentation UI
-- **Google Gemini API** (`gemini-3.1-flash-lite`) — used for AI-based ticket priority classification
+- **Entity Framework Core 8.0.11** for database access and migrations
+- **SQLite** (`Microsoft.EntityFrameworkCore.Sqlite`) as the database engine
+- **JWT authentication** via `Microsoft.AspNetCore.Authentication.JwtBearer` 8.0.11
+- **ASP.NET Core Identity password hashing** via `Microsoft.Extensions.Identity.Core` 8.0.11
+- **Swashbuckle / Swagger** 6.7.3 for API documentation UI
+- **Google Gemini API** (`gemini-3.1-flash-lite`), used for AI-based ticket priority classification
 
 ### Frontend
 - **React 18.3.1** with **TypeScript 5.6.3**
-- **Vite 5.4.11** — dev server and build tool
-- **React Router 6.28.0** — client-side routing
-- **Tailwind CSS 3.4.15** — styling
-- **lucide-react** — icon set
+- **Vite 5.4.11** as the dev server and build tool
+- **React Router 6.28.0** for client-side routing
+- **Tailwind CSS 3.4.15** for styling
+- **lucide-react** for icons
 
 ## Project Structure
 
@@ -65,10 +65,10 @@ Smart-Ticket-System/
 
 Make sure you have these installed before you start:
 
-- **[.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)** — to run the backend
-- **[Node.js 18+](https://nodejs.org/)** (Node 20 recommended) — to run the frontend
+- **[.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)**, needed to run the backend
+- **[Node.js 18+](https://nodejs.org/)** (Node 20 recommended), needed to run the frontend
 - **npm** (comes with Node.js)
-- *(Optional)* A **Google Gemini API key** if you want the AI-based priority classification to actually call the AI. Without it, the system automatically falls back to the rule-based classifier — everything still works.
+- *(Optional)* A **Google Gemini API key**, if you want the AI-based priority classification to actually call the AI. Without it, the system automatically falls back to the rule-based classifier and everything still works.
 
 ## Setup & Configuration
 
@@ -94,9 +94,9 @@ dotnet restore
 dotnet user-secrets set "AiApi:ApiKey" "YOUR_API_KEY_HERE"
 ```
 
-If you skip this step, ticket priority is simply decided by the rule-based classifier instead — no errors, no crashes.
+If you skip this step, ticket priority is simply decided by the rule-based classifier instead. No errors, no crashes.
 
-**Run database migrations.** This step is actually optional — the app calls `db.Database.Migrate()` automatically on startup and will create/update the SQLite database for you. But you can also run it manually:
+**Run database migrations.** This step is actually optional, since the app calls `db.Database.Migrate()` automatically on startup and creates/updates the SQLite database for you. But you can also run it manually:
 
 ```bash
 dotnet ef database update
@@ -171,7 +171,7 @@ Frontend (`Frontend/.env`):
 
 ## How the AI Priority Feature Works
 
-When a new ticket is created, the system decides how urgent it is automatically — no one has to pick a priority manually.
+When a new ticket is created, the system decides how urgent it is automatically. No one has to pick a priority manually.
 
 1. **AI classification (primary):** The ticket's description is sent to a Gemini AI model with a short instruction: *"classify this as High, Medium, or Low priority."* The AI's one-word answer becomes the ticket's priority.
 2. **Rule-based classification (fallback):** If the AI key isn't configured, the request fails, times out (5 seconds), or the AI replies with something that isn't clearly "High/Medium/Low," the system instantly falls back to a simple keyword scan of the description instead:
@@ -179,7 +179,7 @@ When a new ticket is created, the system decides how urgent it is automatically 
    - Contains words like *"error," "not working," "bug," "issue"* → **Medium**
    - Anything else → **Low**
 
-This means ticket creation never fails or hangs because of an AI outage — there's always a sensible priority assigned either way.
+This means ticket creation never fails or hangs because of an AI outage. There's always a sensible priority assigned either way.
 
 ## API Endpoints Overview
 
@@ -202,13 +202,13 @@ All routes are prefixed with `/api`. Endpoints marked 🔒 require a valid JWT (
 
 ## Assumptions & Trade-offs
 
-- **SQLite instead of a full database server** — chosen for simplicity, so the project runs with zero external setup. The connection string can be swapped for SQL Server/PostgreSQL later without changing application code, since access always goes through EF Core.
-- **Soft delete for tickets** — deleting a ticket just marks it `IsDeleted = true` rather than removing the row, so history isn't lost.
-- **Roles exist, but every logged-in user currently has the same API permissions** — `Admin` and `Agent` are tracked on each user and shown in the UI, but the backend doesn't yet restrict specific endpoints (e.g. creating users) to Admins only. Any authenticated user can call any endpoint.
-- **Session storage on the frontend** — the login token is kept in the browser's `sessionStorage` (cleared when the tab closes), not a persistent cookie, to keep the demo simple.
-- **Shared demo password** — all seeded demo accounts use the same password (`Password123!`) purely for ease of testing; this would never be done in a real production system.
+- **SQLite instead of a full database server.** Chosen for simplicity, so the project runs with zero external setup. The connection string can be swapped for SQL Server/PostgreSQL later without changing application code, since access always goes through EF Core.
+- **Soft delete for tickets.** Deleting a ticket just marks it `IsDeleted = true` rather than removing the row, so history isn't lost.
+- **Roles exist, but every logged-in user currently has the same API permissions.** `Admin` and `Agent` are tracked on each user and shown in the UI, but the backend doesn't yet restrict specific endpoints (e.g. creating users) to Admins only. Any authenticated user can call any endpoint.
+- **Session storage on the frontend.** The login token is kept in the browser's `sessionStorage` (cleared when the tab closes), not a persistent cookie, to keep the demo simple.
+- **Shared demo password.** All seeded demo accounts use the same password (`Password123!`) purely for ease of testing; this would never be done in a real production system.
 - **AI classification has a hard 5-second timeout** and always has the rule-based classifier as a safety net, so a slow or misconfigured AI provider can never block ticket creation.
-- **Self-signed HTTPS certificate in development** — the frontend's dev proxy is configured to accept the .NET dev certificate without validation, which is fine locally but would need a real certificate in production (handled separately by the deploy pipeline).
+- **Self-signed HTTPS certificate in development.** The frontend's dev proxy is configured to accept the .NET dev certificate without validation, which is fine locally but would need a real certificate in production (handled separately by the deploy pipeline).
 
 ## Author
 
