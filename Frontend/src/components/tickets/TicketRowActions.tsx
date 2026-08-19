@@ -1,24 +1,24 @@
-import { UserRoundPlus, RefreshCcw, Trash2 } from "lucide-react";
+import { Pencil, RefreshCcw, Trash2 } from "lucide-react";
 
 interface TicketRowActionsProps {
-  onAssign?: () => void;
+  onEdit?: () => void;
   onChangeStatus?: () => void;
   onDelete?: () => void;
 }
 
 export default function TicketRowActions({
-  onAssign,
+  onEdit,
   onChangeStatus,
   onDelete,
 }: TicketRowActionsProps) {
   return (
     <div className="flex items-center justify-end gap-3 text-slate-400">
       <button
-        onClick={onAssign}
+        onClick={onEdit}
         className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-emerald-600"
       >
-        <UserRoundPlus className="h-3.5 w-3.5" />
-        Assign
+        <Pencil className="h-3.5 w-3.5" />
+        Edit
       </button>
       <button
         onClick={onChangeStatus}

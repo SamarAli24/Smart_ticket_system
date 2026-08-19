@@ -23,6 +23,12 @@ export interface CreateTicketRequest {
   assignedToUserId: number | null;
 }
 
+export interface UpdateTicketRequest {
+  title: string;
+  description: string;
+  assignedToUserId: number | null;
+}
+
 export interface UpdateTicketStatusRequest {
   status: TicketDto["status"];
 }

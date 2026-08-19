@@ -32,6 +32,15 @@ export function useTickets() {
     []
   );
 
+  const update = useCallback(
+    async (id: string, input: { title: string; description: string; assigneeId: string }) => {
+      const updated = await ticketsService.updateTicket(id, input);
+      setTickets((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      return updated;
+    },
+    []
+  );
+
   const changeStatus = useCallback(async (id: string, status: Status) => {
     const updated = await ticketsService.updateTicketStatus(id, status);
     setTickets((prev) => prev.map((t) => (t.id === id ? updated : t)));
@@ -42,5 +51,5 @@ export function useTickets() {
     setTickets((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  return { tickets, isLoading, error, refetch, create, changeStatus, remove };
+  return { tickets, isLoading, error, refetch, create, update, changeStatus, remove };
 }

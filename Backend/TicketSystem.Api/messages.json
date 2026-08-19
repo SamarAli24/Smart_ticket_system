@@ -4,6 +4,7 @@
   { "code": 1003, "message": "Ticket created successfully." },
   { "code": 1004, "message": "Ticket status updated successfully." },
   { "code": 1005, "message": "Ticket deleted successfully." },
+  { "code": 1006, "message": "Ticket updated successfully." },
 
   { "code": 1101, "message": "Users retrieved successfully." },
   { "code": 1102, "message": "User created successfully." },

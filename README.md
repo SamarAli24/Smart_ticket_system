@@ -4,10 +4,10 @@ A full-stack support ticket management app. Support agents and admins can log in
 
 ## Features
 
-- **Ticket management**: create tickets, list all tickets, view a single ticket, update its status (`Open` → `InProgress` → `Resolved` → `Closed`), and delete it (soft delete, so the record is kept but hidden).
-- **Automatic priority detection**: every new ticket is automatically classified as `High`, `Medium`, or `Low` priority. This is done by an AI model first, with a keyword-based rule engine as a fallback if the AI call fails or isn't configured (see [How the AI Priority Feature Works](#how-the-ai-priority-feature-works)).
+- **Ticket management**: create tickets, list all tickets, view a single ticket, edit a ticket's title/description/assignee, update its status (`Open` → `InProgress` → `Resolved` → `Closed`), and delete it (soft delete, so the record is kept but hidden).
+- **Automatic priority detection**: every new ticket is automatically classified as `High`, `Medium`, or `Low` priority, and re-classified whenever its description is edited. This is done by an AI model first, with a keyword-based rule engine as a fallback if the AI call fails or isn't configured (see [How the AI Priority Feature Works](#how-the-ai-priority-feature-works)).
 - **User management**: add new users (Admin or Agent), list all users, and deactivate a user account.
-- **Ticket assignment**: a ticket can optionally be assigned to a specific user when it's created.
+- **Ticket assignment**: a ticket can optionally be assigned to a specific user when it's created, and reassigned later by editing the ticket.
 - **Authentication**: email/password login using JWT (JSON Web Tokens). Logout revokes the token server-side so it can't be reused, even if it hasn't expired yet.
 - **Request logging**: every single HTTP request (method, path, status code, response time, IP, and who made it) is recorded to the database.
 - **Activity logging**: every successful create/update/delete action is recorded as an activity log entry, automatically, with no extra code needed per controller. It stores who did what, to which record, and when.
@@ -192,6 +192,7 @@ All routes are prefixed with `/api`. Endpoints marked 🔒 require a valid JWT (
 | GET 🔒 | `/api/tickets` | Get all tickets |
 | GET 🔒 | `/api/tickets/{id}` | Get a single ticket by ID |
 | POST 🔒 | `/api/tickets` | Create a new ticket (priority is auto-assigned) |
+| PUT 🔒 | `/api/tickets/{id}` | Update a ticket's title, description, and assignee (priority is re-classified) |
 | PATCH 🔒 | `/api/tickets/{id}/status` | Update a ticket's status |
 | DELETE 🔒 | `/api/tickets/{id}` | Delete a ticket (soft delete) |
 | GET 🔒 | `/api/users` | Get all users |

@@ -3,23 +3,29 @@ import AppLayout from "../components/layout/AppLayout";
 import TicketListHeader from "../components/tickets/TicketListHeader";
 import TicketFiltersBar from "../components/tickets/TicketFiltersBar";
 import TicketsTable from "../components/tickets/TicketsTable";
+import EditTicketModal, { EditTicketInput } from "../components/tickets/EditTicketModal";
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import { useTickets } from "../hooks/useTickets";
+import { useUsers } from "../hooks/useUsers";
 import { ApiError } from "../services/httpClient";
-import type { Priority, Status } from "../types";
+import type { Priority, Status, Ticket } from "../types";
 
 const STATUS_CYCLE: Status[] = ["Open", "In Progress", "Resolved", "Closed"];
 
 export default function Tickets() {
-  const { tickets, isLoading, error, refetch, changeStatus, remove } = useTickets();
+  const { tickets, isLoading, error, refetch, update, changeStatus, remove } = useTickets();
+  const { users } = useUsers();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "All">("All");
   const [priorityFilter, setPriorityFilter] = useState<Priority | "All">("All");
   const [assigneeFilter, setAssigneeFilter] = useState("All");
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const assigneeOptions = useMemo(() => {
     const map = new Map<string, string>();
@@ -60,6 +66,25 @@ export default function Tickets() {
     }
   };
 
+  const handleEdit = (ticket: Ticket) => {
+    setEditError(null);
+    setEditingTicket(ticket);
+  };
+
+  const handleSubmitEdit = async (input: EditTicketInput) => {
+    if (!editingTicket) return;
+    setIsSavingEdit(true);
+    setEditError(null);
+    try {
+      await update(editingTicket.id, input);
+      setEditingTicket(null);
+    } catch (err) {
+      setEditError(err instanceof ApiError ? err.message : "Could not update ticket. Please try again.");
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
   return (
     <AppLayout title="All Tickets" subtitle="Manage and resolve IT support tickets">
       <TicketListHeader count={filteredTickets.length} />
@@ -86,11 +111,22 @@ export default function Tickets() {
         ) : (
           <TicketsTable
             tickets={filteredTickets}
+            onEdit={handleEdit}
             onChangeStatus={handleChangeStatus}
             onDelete={handleDelete}
           />
         )}
       </div>
+
+      <EditTicketModal
+        open={editingTicket !== null}
+        ticket={editingTicket}
+        users={users}
+        isSubmitting={isSavingEdit}
+        error={editError}
+        onClose={() => setEditingTicket(null)}
+        onSubmit={handleSubmitEdit}
+      />
 
       <ConfirmDialog
         open={deleteTargetId !== null}

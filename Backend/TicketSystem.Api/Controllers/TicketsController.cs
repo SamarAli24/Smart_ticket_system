@@ -34,6 +34,13 @@ public class TicketsController : ApiControllerBase
     public async Task<IActionResult> Create([FromBody] CreateTicketDto dto)
         => await RequestEnd(await _ticketService.CreateAsync(dto));
 
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateTicketDto dto)
+        => await RequestEnd(await _ticketService.UpdateAsync(id, dto));
+
     [HttpPatch("{id:int}/status")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]

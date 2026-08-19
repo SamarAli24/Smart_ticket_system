@@ -23,7 +23,6 @@ export default function UserRow({ user, onDeactivate }: UserRowProps) {
             <p className="font-medium text-slate-800">
               {user.name} {isCurrentUser && <span className="text-slate-400">(you)</span>}
             </p>
-            <p className="text-xs text-slate-400">{user.id}</p>
           </div>
         </div>
       </td>

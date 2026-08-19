@@ -1,6 +1,11 @@
 import { httpClient } from "./httpClient";
 import { ticketDtoToTicket, toApiStatus } from "./adapters";
-import type { CreateTicketRequest, TicketDto, UpdateTicketStatusRequest } from "./apiTypes";
+import type {
+  CreateTicketRequest,
+  TicketDto,
+  UpdateTicketRequest,
+  UpdateTicketStatusRequest,
+} from "./apiTypes";
 import type { Status, Ticket } from "../types";
 
 export async function fetchTickets(): Promise<Ticket[]> {
@@ -19,6 +24,19 @@ export async function createTicket(input: {
     assignedToUserId: input.assigneeId ? Number(input.assigneeId) : null,
   };
   const dto = await httpClient.post<TicketDto>("/tickets", body);
+  return ticketDtoToTicket(dto);
+}
+
+export async function updateTicket(
+  id: string,
+  input: { title: string; description: string; assigneeId: string }
+): Promise<Ticket> {
+  const body: UpdateTicketRequest = {
+    title: input.title,
+    description: input.description,
+    assignedToUserId: input.assigneeId ? Number(input.assigneeId) : null,
+  };
+  const dto = await httpClient.put<TicketDto>(`/tickets/${id}`, body);
   return ticketDtoToTicket(dto);
 }
 

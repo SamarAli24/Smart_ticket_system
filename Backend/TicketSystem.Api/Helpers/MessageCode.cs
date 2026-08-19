@@ -11,6 +11,7 @@ public enum MessageCode
     TicketCreated = 1003,
     TicketStatusUpdated = 1004,
     TicketDeleted = 1005,
+    TicketUpdated = 1006,
 
     // Success — Users
     UsersRetrieved = 1101,

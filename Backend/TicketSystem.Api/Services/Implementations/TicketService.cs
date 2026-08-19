@@ -73,6 +73,37 @@ public class TicketService : ITicketService
         return result.SetSuccess(HttpStatusCode.Created, MessageCode.TicketCreated, created);
     }
 
+    public async Task<Result> UpdateAsync(int id, UpdateTicketDto dto)
+    {
+        var result = new Result();
+
+        var ticket = await _ticketRepository.FindAsync(id);
+        if (ticket is null)
+        {
+            return result.SetError(HttpStatusCode.NotFound, MessageCode.TicketNotFound, id.ToString());
+        }
+
+        if (dto.AssignedToUserId is not null)
+        {
+            var userExists = await _userRepository.ExistsAsync(dto.AssignedToUserId.Value);
+            if (!userExists)
+            {
+                return result.SetError(HttpStatusCode.BadRequest, MessageCode.UserNotFound, dto.AssignedToUserId.Value.ToString());
+            }
+        }
+
+        ticket.Title = dto.Title;
+        ticket.Description = dto.Description;
+        ticket.AssignedToUserId = dto.AssignedToUserId;
+        // Priority is re-evaluated from the (possibly changed) description, same classifier as on creation.
+        ticket.Priority = _priorityClassifier.Classify(dto.Description);
+
+        await _ticketRepository.SaveChangesAsync();
+
+        var updated = await FetchDtoAsync(id);
+        return result.SetSuccess(HttpStatusCode.OK, MessageCode.TicketUpdated, updated);
+    }
+
     public async Task<Result> UpdateStatusAsync(int id, UpdateTicketStatusDto dto)
     {
         var result = new Result();

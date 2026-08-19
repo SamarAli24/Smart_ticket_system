@@ -8,6 +8,7 @@ public interface ITicketService
     Task<Result> GetAllAsync();
     Task<Result> GetByIdAsync(int id);
     Task<Result> CreateAsync(CreateTicketDto dto);
+    Task<Result> UpdateAsync(int id, UpdateTicketDto dto);
     Task<Result> UpdateStatusAsync(int id, UpdateTicketStatusDto dto);
     Task<Result> DeleteAsync(int id);
 }

@@ -6,11 +6,12 @@ import type { Status, Ticket } from "../../types";
 
 interface TicketRowProps {
   ticket: Ticket;
+  onEdit?: (ticket: Ticket) => void;
   onChangeStatus?: (id: string, currentStatus: Status) => void;
   onDelete?: (id: string) => void;
 }
 
-export default function TicketRow({ ticket, onChangeStatus, onDelete }: TicketRowProps) {
+export default function TicketRow({ ticket, onEdit, onChangeStatus, onDelete }: TicketRowProps) {
   return (
     <tr className="align-top hover:bg-slate-50/60">
       <td className="max-w-[180px] px-5 py-4">
@@ -35,6 +36,7 @@ export default function TicketRow({ ticket, onChangeStatus, onDelete }: TicketRo
       </td>
       <td className="px-5 py-4">
         <TicketRowActions
+          onEdit={() => onEdit?.(ticket)}
           onChangeStatus={() => onChangeStatus?.(ticket.id, ticket.status)}
           onDelete={() => onDelete?.(ticket.id)}
         />
