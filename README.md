@@ -2,6 +2,9 @@
 
 A full-stack support ticket management app. Support agents and admins can log in, create and track tickets, update their status, and manage the team. The system also automatically figures out how urgent each new ticket is using an AI model, with a built-in rule-based backup in case the AI is unavailable.
 
+- **Live app**: [smartticket.runasp.net](http://smartticket.runasp.net/login)
+- **Repository**: [github.com/SamarAli24/Smart_ticket_system](https://github.com/SamarAli24/Smart_ticket_system)
+
 ## Features
 
 - **Ticket management**: create tickets, list all tickets, view a single ticket, edit a ticket's title/description/assignee, update its status (`Open` → `InProgress` → `Resolved` → `Closed`), and delete it (soft delete, so the record is kept but hidden).
